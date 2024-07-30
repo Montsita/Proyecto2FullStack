@@ -272,7 +272,7 @@ select count(*) from accommodations a where Type_accomodation = "hostel";
 
 
 -- BUSQUEDAS COMPLEJAS
--- Realizar consultas con subconsultas. - Sacame el paquete más caro y el nombre del cliente que lo reservó
+-- 1.Realizar consultas con subconsultas. - Sacame el paquete más caro y el nombre del cliente que lo reservó
 SELECT 
     t.name AS TravelPackage,
     CONCAT(c.FirstName, ' ', c.LastName) AS Client,
@@ -291,7 +291,7 @@ WHERE
     );
    
    
--- Realizar consultas con subconsultas. - Listame las reservas en el hotel Grand Palace Hostel que tengan un guia que hable ingles 
+-- 2.Realizar consultas con subconsultas. - Listame las reservas en el hotel Grand Palace Hostel que tengan un guia que hable ingles 
 select
 r.id as reserva, CONCAT(c.FirstName, ' ', c.LastName) as client, t.name as travelPackage, a.name as accommodation, CONCAT(tg.FirstName, ' ', tg.LastName) as guia, tg.Languages
 from reservations r 
@@ -310,7 +310,7 @@ where
 	);
 
 
--- Realizar consultas con JOINs entre varias tablas. - Sacame los clientes que tienen contratado el travelpackage en bangokok
+-- 3.Realizar consultas con JOINs entre varias tablas. - Sacame los clientes que tienen contratado el travelpackage en bangokok
 select d.name , d.MainAttractions, t.name as name_travelpackage, CONCAT(c.FirstName, ' ', c.LastName) as client_buy_package
 from destinations d
 join travelpackages t on d.Id = t.DestinationID
@@ -318,17 +318,120 @@ join reservations r on r.PackageID = t.Id
 join clients c on r.ClientID = c.Id 
 where d.name = 'Bangkok';
 
--- Realizar consultas con agregaciones (SUM, AVG, MIN, MAX). - Suma todos los precios de las reservas confirmadas hechas entre enero y mayo
-select t.name as travelpackage,  CONCAT(c.FirstName, ' ', c.LastName) as client, r.totalPrice as price, SUM(r.totalPrice) over () as totalPrice_allReservations
-from reservations r 
-join travelpackages t on t.Id = r.PackageID 
-join clients c on c.Id = r.ClientID 
-where r.ReservationDate between '2024-01-01' and '2024-05-01' 
-and r.Status = 'confirmed';
 
--- Realizar consultas con agregaciones (SUM, AVG, MIN, MAX). - Calculame la media de los precios de los packages
+-- 4.Realizar consultas con agregaciones (SUM, AVG, MIN, MAX). - Suma todos los precios de las reservas confirmadas hechas entre enero y mayo
+select
+	t.name as travelpackage, 
+	CONCAT(c.FirstName, ' ', c.LastName) as client, 
+	r.totalPrice as price, 
+	SUM(r.totalPrice) over () as totalPrice_allReservations
+from 
+	reservations r 
+join 
+	travelpackages t on t.Id = r.PackageID 
+join 
+	clients c on c.Id = r.ClientID 
+where 
+	r.ReservationDate between '2024-01-01' and '2024-05-01' 
+and 
+	r.Status = 'confirmed';
+
+
+-- 5.Realizar consultas con agregaciones (SUM, AVG, MIN, MAX). - Calculame la media de los precios de los packages
 select price from travelpackages t;
 select AVG(t.price) as average_price_packages
 from travelpackages t ;
 
--- Filtrar resultados de grupos (HAVING). 
+
+-- 6.Filtrar resultados de grupos (HAVING). - Sacame las reservas ordenadas por la fecha más reciente que tengan un coste más económico que la media de precios de las reservas
+select 
+	CONCAT(c.FirstName, ' ', c.LastName),
+	r.reservationDate as reservation_date,
+	r.totalPrice as price
+from
+	reservations r 
+join
+	clients c on r.ClientID = c.id
+	
+group by
+	r.id, c.FirstName, c.LastName, r.totalPrice
+
+having
+	r.totalPrice < (
+		select AVG(r2.totalPrice)
+		from reservations r2 
+	)
+order by
+	r.reservationDate;
+
+
+-- 7.Filtrar resultados de grupos (HAVING). - Sacame el alojamiento que tenga un precio por debajo de la media y tenga más de 3 años de experiencia
+select 
+	a.name as accommodations,
+	a.PricePerNight as price_for_night,
+	r.YearsOfExperience 
+from 
+	accommodations a 
+join 
+	reservations r on r.Id = a.ReservationID 
+	
+group by
+	a.name, a.PricePerNight, r.YearsOfExperience
+having
+	a.PricePerNight < (
+		select AVG(a2.PricePerNight)
+		from accommodations a2 
+	)
+	and
+	r.YearsOfExperience > 3
+
+order by
+	a.pricePerNight;
+
+
+-- 8.Sacame la información de los alojamientos que tengan capacidad para más de 5 personas y que tengan reserva confirmadas
+-- ESTA MAL CORREGIR!!!!!
+select 
+	a.name as accommodations,
+	a.capacity,
+	r.numberOfPeople
+from
+	accommodations a 
+join
+	reservations r on a.ReservationID = r.Id 
+where r.NumberOfPeople > (
+	select a2.Capacity 
+	from accommodations a2 
+	where a2.Capacity < 5
+) 
+and 
+	r.Status = 'Confirmed'
+order by
+	a.Capacity desc;
+
+-- 9.Sacame los destinos más visitados y el precio medio de las resevas
+
+SELECT 
+    d.name AS destination,
+    COUNT(r.Id) AS visit_count,
+    AVG(r.TotalPrice) AS average_price
+FROM 
+    destinations d
+JOIN 
+    travelpackages t ON d.Id = t.DestinationID
+JOIN 
+    reservations r ON t.Id = r.PackageID
+GROUP BY 
+    d.name
+ORDER BY 
+    visit_count desc;
+
+-- 10.Sacame el nombre de los alojamientos que son hostel y tengan reservas completadas.
+
+select count(*), 
+a.name AS accommodation
+from accommodations a 
+join reservations r on r.Id = a.ReservationID 
+where Type_accomodation = "hostel"
+and r.Status = 'Confirmed'
+group by a.name;
