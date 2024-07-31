@@ -53,8 +53,11 @@ CREATE TABLE Reservations (
     AccommodationID INT,
     ReservationDate DATE NOT NULL,
     NumberOfPeople INT NOT NULL,
+    NumberOfNights INT not null,
+    YearsOfExperience INT not null,
     TotalPrice DECIMAL(10, 2) NOT NULL,
     Status VARCHAR(50) NOT NULL,
+    Paid boolean not null default false,
     FOREIGN KEY (ClientID) REFERENCES Clients(Id),
     FOREIGN KEY (PackageID) REFERENCES TravelPackages(Id),
     FOREIGN KEY (AccommodationID) REFERENCES Accommodations(Id)
@@ -87,8 +90,6 @@ CREATE TABLE reservations_guides (
     FOREIGN KEY (ReservationID) REFERENCES Reservations(Id)
 );
 
-ALTER TABLE Reservations
-ADD COLUMN YearsOfExperience INT NOT NULL;
 
 INSERT INTO Destinations (Name, Country, MainAttractions) VALUES 
 ('Paris', 'France', 'Eiffel Tower, Louvre Museum, Notre Dame Cathedral'),
@@ -143,17 +144,17 @@ INSERT INTO Accommodations (Name, DestinationID, Type_accomodation, Address, Pri
 
 
 -- Insertar datos en Reservations
-INSERT INTO Reservations (ClientID, PackageID, AccommodationID, ReservationDate, NumberOfPeople, TotalPrice, Status, YearsOfExperience) VALUES 
-(1, 1, 1, '2024-01-01', 2, 2400.00, 'Confirmed', 5),
-(2, 2, 2, '2024-02-01', 1, 1500.00, 'Confirmed', 3),
-(3, 3, 3, '2024-03-01', 2, 3600.00, 'Pending', 7),
-(4, 4, 4, '2024-04-01', 3, 3300.00, 'Cancelled', 2),
-(5, 5, 5, '2024-05-01', 4, 7200.00, 'Confirmed', 8),
-(6, 6, 6, '2024-06-01', 1, 1000.00, 'Pending', 6),
-(7, 7, 7, '2024-07-01', 2, 4000.00, 'Confirmed', 10),
-(8, 8, 8, '2024-08-01', 2, 2600.00, 'Confirmed', 4),
-(9, 9, 9, '2024-09-01', 3, 2700.00, 'Pending', 9),
-(10, 10, 10, '2024-10-01', 1, 1300.00, 'Confirmed', 5);
+INSERT INTO Reservations (ClientID, PackageID, AccommodationID, ReservationDate, NumberOfPeople, NumberOfNights, YearsOfExperience, TotalPrice, Status, Paid) VALUES 
+(1, 1, 1, '2024-01-01', 2, 5, 5, 2400.00, 'Confirmed', TRUE),
+(2, 2, 2, '2024-02-01', 1, 3, 3, 1500.00, 'Confirmed', TRUE),
+(3, 3, 3, '2024-03-01', 2, 7, 7, 3600.00, 'Pending', FALSE),
+(4, 4, 4, '2024-04-01', 3, 2, 2, 3300.00, 'Cancelled', FALSE),
+(5, 5, 5, '2024-05-01', 4, 8, 8, 7200.00, 'Confirmed', TRUE),
+(6, 6, 6, '2024-06-01', 1, 6, 6, 1000.00, 'Pending', FALSE),
+(7, 7, 7, '2024-07-01', 2, 10, 10, 4000.00, 'Confirmed', TRUE),
+(8, 8, 8, '2024-08-01', 2, 4, 4, 2600.00, 'Confirmed', TRUE),
+(9, 9, 9, '2024-09-01', 3, 9, 9, 2700.00, 'Pending', FALSE),
+(10, 10, 10, '2024-10-01', 1, 5, 5, 1300.00, 'Confirmed', TRUE);
 
 UPDATE Accommodations
 SET ReservationID = 1
@@ -389,8 +390,8 @@ order by
 	a.pricePerNight;
 
 
--- 8.Sacame la información de los alojamientos que tengan capacidad para más de 5 personas y que tengan reserva confirmadas
--- ESTA MAL CORREGIR!!!!!
+-- 8.Sacame la información de los alojamientos con una media mayor de la capacidad que tienen la mayoria y que tengan reserva confirmadas
+
 select 
 	a.name as accommodations,
 	a.capacity,
@@ -399,10 +400,9 @@ from
 	accommodations a 
 join
 	reservations r on a.ReservationID = r.Id 
-where r.NumberOfPeople > (
-	select a2.Capacity 
+where a.Capacity >(
+	select avg(a2.Capacity)
 	from accommodations a2 
-	where a2.Capacity < 5
 ) 
 and 
 	r.Status = 'Confirmed'
@@ -435,3 +435,196 @@ join reservations r on r.Id = a.ReservationID
 where Type_accomodation = "hostel"
 and r.Status = 'Confirmed'
 group by a.name;
+
+-- CREACIÓN DE TRIGGERS
+-- 1. Creo un trigger para que me calcule el precio total del alojamiento basado en el numero de personas, el precio por noche del alojamiento y el paquete de viaje
+-- al hacerse una reserva nueva
+DELIMITER //
+create trigger calculate_total_price
+before insert on reservations
+for each row 
+begin
+	declare price_package DECIMAL (10, 2);
+	declare price_accomodation_night DECIMAL (10, 2);
+	declare price_accomodation_total DECIMAL (10, 2);
+	declare total_price_reservation DECIMAL (10,2);
+	select 
+		price into price_package
+		from travelpackages 
+		where id = new.packageID;
+	
+	select 
+		pricePerNight into price_accomodation_night
+		from accommodations
+		where id = new.AccommodationID;
+		
+		
+	set price_accomodation_total = price_accomodation_night * new.numberofnights;
+	
+	set total_price_reservation = price_accomodation_total + price_package;
+
+	set new.totalprice = total_price_reservation;		
+	
+end //
+
+DELIMITER ;
+
+
+
+-- 2. Creo un trigger que me cambie el estado de las reservas de pendientes a confirmadas una vez esten pagadas 
+DELIMITER //
+create trigger change_status_reservations
+before insert on reservations
+for each row 
+begin
+	
+if 	new.paid = true then
+	set new.status = 'Confirmed';
+else 
+	set new.status = 'Pending';
+	
+end if;
+	
+end //
+
+DELIMITER ;
+
+INSERT INTO Reservations (ClientID, PackageID, AccommodationID, ReservationDate, NumberOfPeople, NumberOfNights, YearsOfExperience, TotalPrice, Status, Paid)
+VALUES (2, 4, 5, '2024-11-15', 2, 5, 5, 0.00, 'Pending', true);
+
+-- 3 Evento que actualize cada mes las reservas que esten expiradas
+-- ver que tengo activado los eventos
+SHOW VARIABLES LIKE 'event_scheduler';
+-- ver los eventos activos 
+show events;
+
+set global event_scheduler = on;
+
+delimiter //
+
+create event change_expired_reservations
+on schedule every 1 month 
+do
+begin
+    update reservations 
+    set status = 'expired'
+    where status <> 'expired'
+    and date_add(reservationdate, interval numberofnights day) < curdate(); 	
+end //
+
+delimiter ;
+
+-- TRANSACCIÓN 
+-- Inserto una nueva reserva, le añado un guia turistico, despues actualizo el precio total con los gastos y cambio el estado a confirmado y pagado
+
+start transaction;
+
+INSERT INTO reservations (clientid, packageid, accommodationid, reservationdate, numberofpeople, numberofnights, yearsofexperience, totalprice, status, paid)
+VALUES (1, 1, 1, '2024-08-01', 2, 5, 5, 0.00, 'Pending', FALSE);
+
+
+set @reservation_id = last_insert_id();
+
+set @price_total = (
+	(select a.pricePerNight from accommodations a join reservations r on a.id = r.accommodationid where r.id = @reservation_id)) * 
+	(select numberofnights from reservations where id = @reservation_id) + 
+	(select t.price from travelpackages t join reservations r on t.id = r.packageid where r.id = @reservation_id);
+
+insert into reservations_guides (guideid, reservationid)
+values (2, @reservation_id);
+
+update reservations 
+set totalprice = @price_total
+where id = @reservation_id;
+
+update reservations 
+set status = 'Confirmed'
+where id = @reservation_id;
+
+update reservations 
+set paid = true 
+where id = @reservation_id;
+
+commit;
+
+rollback;
+
+-- FUNCIONES
+-- 1.Funcion para calcular cuantas reservas tengo en estado confirmado y cuantas tengo en pendiente
+delimiter //
+
+create function calculate_reservation_confirmed() returns int
+reads sql data
+begin
+	declare num_reservation_confirmed int;
+	
+	select count(*) from reservations where Status = 'Confirmed' into num_reservation_confirmed;
+	return num_reservation_confirmed;
+end //
+delimiter ; 
+
+delimiter //
+
+create function calculate_reservation_pending() returns int
+reads sql data
+begin
+	declare num_reservation_pending int;
+	
+	select count(*) from reservations where Status = 'Pending' into num_reservation_pending;
+	return num_reservation_pending;
+end //
+delimiter ;
+
+-- 2.Funcion para saber cuantos guias tengo sin clientes a fecha de hoy, ha tenido que ser procedure porque me daba error al devover mas de un dato
+delimiter //
+
+create procedure tourguide_without_clients()
+begin
+    select concat(t.FirstName, ' ', t.LastName) as FullName
+    from tourguides t
+    left join reservations_guides rg on t.id = rg.guideid
+    left join reservations r on rg.reservationid = r.id
+    where r.id is null or date(r.reservationdate) < curdate();
+end //
+
+delimiter ;
+
+-- call tourguide_without_clients(); Para llamar al procedure
+
+-- 3.Funcion para contar las reservas por un cliente especifico
+delimiter //
+
+create function count_client_reservations(client_id int) returns int
+reads sql data
+begin
+	declare reservation_count int;
+	
+	select count(*) into reservation_count 
+	from reservations r 
+	where r.ClientID = client_id;
+
+	return reservation_count;
+end //
+delimiter ;
+
+-- 4.Funcion para saber el alojamiento con más reservas
+delimiter //
+
+create function get_accommodation_with_most_reservations() returns int
+reads sql data
+begin
+    declare accommodation_id int;
+
+    select a.id
+    into accommodation_id
+    from accommodations a
+    join reservations r on a.id = r.accommodationid
+    group by a.id
+    order by count(r.id) desc
+    limit 1;
+
+    return accommodation_id;
+end //
+
+delimiter ;
+		
