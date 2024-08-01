@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personajes Favoritos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    {% for destination in destinations %}
+    <article class="caja-1">
+    <img src="static/img/{{ destination[1] }}.jpg" alt="{{ destination[1] }}">
+        <secction>
+            <h2>{{ destination[1] }}</h2>
+            <a class="details_destination" href="/details_destination/{{ destination[0] }}">View details</a>
+        </secction>
+    </article>
+    {% endfor %}
+    </article>
+    <section>
+        <a class="add_destination" href="/add_destinations">Agregar Destino</a>
+    </section>
+    </body>
+</html>

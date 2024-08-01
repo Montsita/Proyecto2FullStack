@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update destination</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Update destination</h1>
+       <form action="/update_destination/{{ destination[0] }}/editar" method="post"> 
+        <label for="name">Name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value="{{ destination[1] }}"
+          required
+        /><br />
+
+        <label for="country">Country:</label>
+        <input
+          type="text"
+          id="country"
+          name="country"
+          value="{{ destination[2] }}"
+          required
+        /><br />
+
+        <label for="MainAttractions">Main Attractions:</label>
+        <textarea id="MainAttractions" name="MainAttractions">{{ destination[3] }}</textarea
+        ><br />
+        <button type="submit">Save changes</button>
+    </form>
+
+      <a href="/">Back to destinations</a>
+    </div>
+  </body>
+</html>

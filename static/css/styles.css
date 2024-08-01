@@ -1,0 +1,122 @@
+* {
+    margin: 0;
+    padding: 10px;
+    font-family: "Comic Neue", cursive;
+    font-weight: 300;
+    font-style: normal;     
+}
+
+h1, h2, h3{
+
+    font-family: "Comic Neue", cursive;
+    font-weight: 700;
+    font-style: normal;
+}
+
+body{
+    padding: 0;
+    width: 100vw;
+    height: 1200px;
+    background-color: #dcb7ee;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: center;
+}
+
+article{
+    background-color: blanchedalmond;
+    padding: 0;
+    margin: 20px;
+    min-width: 100px;
+    width: 25%;
+    height: 300px;
+    display: flex; 
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    border-radius: 10%;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+
+}
+
+article{
+    transition: transform 0.2s ease;
+}
+
+article:hover{
+    transform: scale(1.1);
+}
+
+section{
+    background-color: blanchedalmond;
+    padding: 0;
+    margin: 20px;
+    width: 25%;
+    height: 300px;
+    display: flex; 
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    border-radius: 10%;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+   
+}
+
+.add_destination{
+    width: 100px;
+    height: 50px;
+    text-align: center;
+    border-radius: 20%;
+    background-color: rgb(172, 109, 231);
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.container_details h1{
+    text-align: center;
+}
+
+.container_details{
+    width: 500px;
+    height: 500px;
+}
+
+.details{
+    width: 90%;
+    height: 80%;
+    text-align: center;
+    border-radius: 20%;
+}
+
+.details div{
+    width: 250px;
+    height: auto;
+}
+
+.info{
+    text-align: center;
+    background-color: #dcb7ee;
+}
+
+.titol{
+    text-align: center;
+    font-weight: bold;
+    background-color: blanchedalmond;
+}
+
+section h2{
+    text-align: center;
+    width: 50%;
+    height: 50%;
+}
+
+img{
+    padding: 0;
+    width: 180px;
+    height: 200px;
+}
+

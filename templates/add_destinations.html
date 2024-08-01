@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a new destination</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+</head>
+<body>
+    <div class="container">
+        <h1>Add a new destination</h1>
+        <form action="/add_destination" method="post">
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" required />
+  
+          <label for="country">Country:</label>
+          <input type="text" id="country" name="country" required />
+  
+          <label for="main_attractions">Main attractions:</label>
+          <textarea id="main_attractions" name="main_attractions"></textarea>
+  
+          <button type="submit">Add destination</button>
+        </form>
+    </div>
+</body>
+</html>
