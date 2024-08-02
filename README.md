@@ -30,9 +30,18 @@ This project has been developed by Montserrat Cobes Orteu, a technology and trav
 - **Update Reservation Prices**: Users can update the prices of reservations based on changes in travel package prices or special discounts.
 - **Tour Guide Management**: Users can manage tour guides and their assignments to reservations.
 
-## Database Justification
+### Database Justification
 
-The database is designed to efficiently manage and relate the various entities involved in the tourism travel application. The design ensures data integrity and supports the functionalities required by the web application.
+The database has been designed to optimize the management and relationships between different key entities: destinations, travel packages, clients, accommodations, and reservations. The structure of the database ensures referential integrity and allows for easy extension of functionality.
+
+- **Destinations**: Main table containing information about tourist destinations.
+- **TravelPackages**: Table relating travel packages to destinations.
+- **Clients**: Table for storing client information.
+- **Accommodations**: Table managing available accommodations in each destination.
+- **Reservations**: Table handling reservations made by clients, relating them to packages and accommodations.
+- **TourGuides**: Table managing information about tour guides associated with reservations.
+
+This structure facilitates the expansion and modification of the database without compromising data integrity, ensuring efficient and flexible information management.
 
 ## Technologies Used
 

@@ -12,11 +12,6 @@ db_config = {
 
 @app.route('/')
 def index():
-    # 1º Generámos una hipótesis
-    # 2º Experimentamos para validarla
-    # 3º Si el experimento sale mal vamos al paso 1, si sale bien vamos al 4
-    # 4º Aprendemos del error.
-    
     try: 
         conn = mysql.connector.connect(**db_config)
         if conn.is_connected():
@@ -74,11 +69,26 @@ def details_destination(id):
         print(f"Error connecting to the database")
     return "Error connecting to the database"
 
-@app.route('/update_destination')
-def update_destinations_pag():
-    return render_template('update_destination.html')
+@app.route('/update_destination/<int:id>')
+def update_destinations_pag(id):
+    try:
+        conn = mysql.connector.connect(**db_config)
+        if conn.is_connected():
+            cursor = conn.cursor()
+            query = "SELECT id, name, country, MainAttractions FROM destinations WHERE id = %s"
+            cursor.execute(query, (id,))
+            destination = cursor.fetchone()
+            cursor.close()
+            conn.close()
+            if destination:
+                return render_template('update_destination.html', destination=destination)
+            else:
+                return "Destination not found"
+    except:
+        print(f"Error connecting to the database")
+    return "Error connecting to the database"
 
-@app.route('/update_destination/<int:id>/editar', methods=['POST'])
+@app.route('/edit/<int:id>', methods=['POST'])
 def edit_destination(id):
     name = request.form['name']
     country = request.form['country']
@@ -95,12 +105,46 @@ def edit_destination(id):
             conn.close()
             return redirect(url_for('details_destination', id=id))
     except mysql.connector.Error as err:
-        print(f"Error de MySQL: {err}")  # Punto de depuración específico
+        print(f"Error de MySQL: {err}")  
     except Exception as e:
-        print(f"Error connecting to the database: {e}")  # Punto de depuración genérico
+        print(f"Error connecting to the database: {e}") 
 
-    return "Error to edit destination"
+    return "Error when editing destination"
 
+@app.route('/details_destination/<int:id>/eliminar', methods=['POST'])
+def destination_delete(id):
+    try:
+        conn = mysql.connector.connect(**db_config)
+        if conn.is_connected():
+            cursor = conn.cursor()
+            accommodation_id_query = "SELECT DISTINCT r.AccommodationID FROM Destinations d JOIN Accommodations a ON d.Id = a.DestinationID JOIN Reservations r ON a.Id = r.AccommodationID WHERE d.Id = %s"
+            cursor.execute(accommodation_id_query, (id,))
+            result= cursor.fetchone()
+            if result:
+                accommodation_id = result[0]
+                 # Elimina las filas dependientes en la tabla reservations
+                delete_reservations_query = "DELETE FROM reservations WHERE id = %s"
+                cursor.execute(delete_reservations_query, (accommodation_id,))
+
+                delete_accommodations_query = "DELETE FROM accommodations WHERE id = %s"
+                cursor.execute(delete_accommodations_query, (id,))
+
+                delete_travelpackages_query = "DELETE FROM travelpackages WHERE id = %s"
+                cursor.execute(delete_travelpackages_query, (id,))
+
+                delete_destinations_query = "DELETE FROM destinations WHERE id = %s"
+                cursor.execute(delete_destinations_query, (id,))
+
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return redirect(url_for('index'))
+    except mysql.connector.Error as err:
+        print(f"Error de MySQL: {err}")  
+    except Exception as e:
+        print(f"Error connecting to the database: {e}")  
+
+    return "Error when deleting destination"
 
 if __name__ == '__main__':
     app.run(debug=True)

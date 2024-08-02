@@ -108,6 +108,14 @@ section{
     background-color: blanchedalmond;
 }
 
+nav{
+    display: flex;
+    width: 500px;
+    height: auto;
+    margin-left: -10px;
+
+}
+
 section h2{
     text-align: center;
     width: 50%;

@@ -18,7 +18,7 @@ CREATE TABLE TravelPackages (
     DurationDays INT NOT NULL,
     Description TEXT,
     Includes VARCHAR(255),
-    FOREIGN KEY (DestinationID) REFERENCES Destinations(Id)
+    FOREIGN KEY (DestinationID) REFERENCES Destinations(Id) on delete cascade
 );
 
 CREATE TABLE Clients (
@@ -29,6 +29,7 @@ CREATE TABLE Clients (
     Phone VARCHAR(15),
     Address VARCHAR(255)
 );
+
 
 -- Relación one to many entre alojamientos y destinos
 
@@ -41,8 +42,10 @@ CREATE TABLE Accommodations (
     PricePerNight DECIMAL(10, 2) NOT NULL,
     Capacity INT NOT NULL,
     Description TEXT,
-    FOREIGN KEY (DestinationID) REFERENCES Destinations(Id)
+    FOREIGN KEY (DestinationID) REFERENCES Destinations(Id) on delete cascade
 );
+
+
 
 -- Relación one to one en alojamiento y reservas
 
@@ -58,15 +61,18 @@ CREATE TABLE Reservations (
     TotalPrice DECIMAL(10, 2) NOT NULL,
     Status VARCHAR(50) NOT NULL,
     Paid boolean not null default false,
-    FOREIGN KEY (ClientID) REFERENCES Clients(Id),
-    FOREIGN KEY (PackageID) REFERENCES TravelPackages(Id),
-    FOREIGN KEY (AccommodationID) REFERENCES Accommodations(Id)
+    FOREIGN KEY (ClientID) REFERENCES Clients(Id) on delete cascade,
+    FOREIGN KEY (PackageID) REFERENCES TravelPackages(Id) on delete cascade,
+    FOREIGN KEY (AccommodationID) REFERENCES Accommodations(Id) on delete cascade
 );
 
 ALTER TABLE Accommodations
 ADD ReservationID INT,
 ADD CONSTRAINT fk_reservation
-FOREIGN KEY (ReservationID) REFERENCES Reservations(Id);
+FOREIGN KEY (ReservationID) REFERENCES Reservations(Id) on delete cascade;
+
+alter table accommodations 
+drop foreign key fk_reservation;
 
 -- Relación one to many entre reservas y guias
 
@@ -78,7 +84,7 @@ CREATE TABLE TourGuides (
     Phone VARCHAR(15),
     Languages VARCHAR(255),
     ReservationID INT,
-    FOREIGN KEY (ReservationID) REFERENCES Reservations(Id)
+    FOREIGN KEY (ReservationID) REFERENCES Reservations(Id) on delete cascade
 );
 
 -- Relacion many to many en reservas y guias
@@ -86,10 +92,9 @@ CREATE TABLE reservations_guides (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     GuideID INT,
     ReservationID INT,
-    FOREIGN KEY (GuideID) REFERENCES TourGuides(Id),
-    FOREIGN KEY (ReservationID) REFERENCES Reservations(Id)
+    FOREIGN KEY (GuideID) REFERENCES TourGuides(Id) on delete cascade,
+    FOREIGN KEY (ReservationID) REFERENCES Reservations(Id) on delete cascade
 );
-
 
 INSERT INTO Destinations (Name, Country, MainAttractions) VALUES 
 ('Paris', 'France', 'Eiffel Tower, Louvre Museum, Notre Dame Cathedral'),

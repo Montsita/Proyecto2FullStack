@@ -15,15 +15,20 @@
        <section class="details"> 
         <div class="div_details">
             <p class="titol">NAME</p>
-            <p class="info" value ="{{ destination[2] }}"></p>
+            <p class="info">{{ destination[1] }}</p>
             <p class="titol">COUNTRY</p>
-            <p class="info" value ="{{ destination[2] }}"></p>
+            <p class="info">{{ destination[2] }}</p>
             <p class="titol">MAIN ATTRACTIONS</p>
-            <p class="info" value ="{{ destination[3] }}"></p>
+            <p class="info">{{ destination[3] }}</p>
         </div>
     </section>
+    <nav>
       <a href="/">Back to destinations</a>
-      <a href="/update_destination/{{ destination[0] }}/editar">Update destination</a>
+      <a href="/update_destination/{{ destination[0] }}">Update destination</a>
+    </nav>
+    <form action="/details_destination/{{ destination[0] }}/eliminar" method="POST">
+      <button type="submit">Delete destination</button>
+  </form>
     </div>
   </body>
 </html>

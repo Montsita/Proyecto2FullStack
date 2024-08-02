@@ -12,7 +12,7 @@
   <body>
     <div class="container">
       <h1>Update destination</h1>
-       <form action="/update_destination/{{ destination[0] }}/editar" method="post"> 
+       <form action="/edit/1" method="post"> 
         <label for="name">Name:</label>
         <input
           type="text"
@@ -31,8 +31,8 @@
           required
         /><br />
 
-        <label for="MainAttractions">Main Attractions:</label>
-        <textarea id="MainAttractions" name="MainAttractions">{{ destination[3] }}</textarea
+        <label for="main_attractions">Main Attractions:</label>
+        <textarea id="main_attractions" name="main_attractions">{{ destination[3] }}</textarea
         ><br />
         <button type="submit">Save changes</button>
     </form>
