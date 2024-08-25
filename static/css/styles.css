@@ -148,6 +148,62 @@ header .container{
   height: 10px;
 }
 
+/* navbar boton busqueda */
+.search-container{
+  position: absolute;
+  left: 80%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  padding: 10px;
+}
+
+input{
+  top: 200px;
+  outline: none;
+  box-sizing: border-box;
+  height: 60px;
+  width: 0;
+  padding: 0 20px;
+  color: #000;
+  border-radius: 50px;
+  font-size: 20px;
+  border: 1px solid #551A8B;
+  transition: all .7s ease;
+}
+
+::placeholder{
+  color: grey;
+}
+
+.btn{
+  position: absolute;
+  right: 0;
+  top: 10px;
+  width: 50px;
+  height: 50px;
+  background: white;
+  border-radius: 50%;
+  text-align: center;
+  cursor: pointer;
+  transition: .5s;
+}
+
+.btn i {
+  font-size: 25px;
+  color: #551A8B;
+  line-height: 43px;
+  transition: all .7s ease;
+}
+
+.search-container:hover input{
+  width: 350px;
+}
+
+.search-container:hover i{
+  transform: rotate(-360deg);
+}
+
+
 .navbar .navbar-toggler .menu-icon-bar:first-child {
   opacity: 1;
   -webkit-transform: translateY(-1px) rotate(45deg);
@@ -368,7 +424,7 @@ header .container{
 
 * {
     margin: 0;
-    padding: 10px;
+    padding: 5px;
     font-family: "Comic Neue", cursive;
     font-weight: 300;
     font-style: normal;     
@@ -397,7 +453,7 @@ article{
     padding: 0;
     margin: 20px;
     min-width: 100px;
-    width: 25%;
+    width: 15%;
     height: 300px;
     display: flex; 
     flex-direction: column;
@@ -417,20 +473,13 @@ article:hover{
 }
 
 section{
-    background-color: blanchedalmond;
-    padding: 0;
     margin: 20px;
-    width: 25%;
     height: 300px;
     display: flex; 
     flex-direction: column;
-    justify-content: flex-end;
+    color: #551A8B;
     align-items: center;
-    border-radius: 10%;
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
-    display: flex;
-    justify-content: center;
-   
+    
 }
 
 .add_destination{
@@ -486,15 +535,12 @@ nav{
 }
 
 section h2{
-    text-align: center;
-    width: 50%;
-    height: 50%;
+  height: 40%;
 }
 
 img{
-    padding: 0;
-    width: 180px;
-    height: 200px;
+    width: 200px;
+    height: 500px;
     border-radius: 10%;
 }
 
