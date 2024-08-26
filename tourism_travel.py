@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, url_for
+from flask import Flask, jsonify, request, redirect, render_template, url_for
 import mysql.connector # pip install flask mysql-connector-python
 
 app = Flask(__name__)
@@ -9,6 +9,20 @@ db_config = {
     'host': 'localhost',
     'database': 'tourism_travel'
 } 
+
+@app.route('/api/projects', methods=['GET'])
+def get_projects():
+    try: 
+        conn = mysql.connector.connect(**db_config)
+        if conn.is_connected():
+            cursor = conn.cursor(dictionary=True)  # dictionary=True para obtener resultados como diccionarios
+            cursor.execute("SELECT id, name, country, MainAttractions FROM destinations")
+            destinations = cursor.fetchall()
+            cursor.close()
+            conn.close()
+    except:
+        print(f"Error al conectar a la base de datos")
+    return jsonify(destinations)  # Flask convierte automáticamente el resultado a JSON
 
 @app.route('/')
 def index():

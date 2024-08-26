@@ -43,7 +43,7 @@
                         </li>
                         <li><a href="#" class="nav-item nav-link">Contact</a></li>
                         <li class="search-container">
-                            <input type="text" placeholder="Search">
+                            <input class="button-search"type="text" placeholder="Search">
                             <div class="btn">
                                 <i class="fa fa-search" title="Search"></i>
                             </div>
@@ -55,7 +55,32 @@
 
     </header>
 
-  
+    <aside>
+
+        <div class="loggin">
+            <h3>Log in</h3>
+            <form action="">
+                <input class="user" type="email" name="email" placeholder="Email">
+                <input class="user" type="password" name="password" placeholder="Password">
+                <input class="enter" type="submit" value="Enter">
+            </form>
+        </div>
+        <div class="experience-container">
+            <h3>Exclusive experiences</h3>
+            <button id="prevExpBtn">⬅️</button>
+            <div class="experience">
+            </div>
+            <button id="nextExpBtn">➡️</button>
+        </div>
+        <div class="opinions-container">
+            <h3>Traveler experiences</h3>
+            <div class="carusel-opinions">
+            </div>
+            <button id="prevOpiBtn">⬅️</button>
+            <button id="nextOpiBtn">➡️</button>
+        </div>
+        
+        </aside>
 
     {% for destination in destinations %}
                 <article class="caja-1">
@@ -67,28 +92,14 @@
                 </article>
                 {% endfor %}
                 </article>
-                <section>
+                <section class="box">
                     <a class="add_destination" href="/add_destinations">Agregar Destino</a>
                 </section>
-    <!-- <main>
-        <section id="content" class="content">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-4">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec elit ex. Etiam elementum lectus et tempor molestie. Pellentesque vestibulum dui sit amet dui volutpat sollicitudin. Etiam non erat finibus, iaculis nunc vel, convallis eros. Etiam efficitur tempor dui, vitae fringilla ipsum tristique quis. Aliquam erat volutpat. Cras ullamcorper ex et viverra vulputate. Nam lectus ligula, pretium nec risus nec, ultricies fringilla mauris. Proin quis venenatis neque, iaculis porta nulla. </p>
-                    </div>
-                    <div class="col-md-4">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec elit ex. Etiam elementum lectus et tempor molestie. Pellentesque vestibulum dui sit amet dui volutpat sollicitudin. Etiam non erat finibus, iaculis nunc vel, convallis eros. Etiam efficitur tempor dui, vitae fringilla ipsum tristique quis. Aliquam erat volutpat. Cras ullamcorper ex et viverra vulputate. Nam lectus ligula, pretium nec risus nec, ultricies fringilla mauris. Proin quis venenatis neque, iaculis porta nulla. </p>
-                    </div>
-                    <div class="col-md-4">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec elit ex. Etiam elementum lectus et tempor molestie. Pellentesque vestibulum dui sit amet dui volutpat sollicitudin. Etiam non erat finibus, iaculis nunc vel, convallis eros. Etiam efficitur tempor dui, vitae fringilla ipsum tristique quis. Aliquam erat volutpat. Cras ullamcorper ex et viverra vulputate. Nam lectus ligula, pretium nec risus nec, ultricies fringilla mauris. Proin quis venenatis neque, iaculis porta nulla. </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main> -->
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/experienceDestinations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/opinions.js') }}"></script>
     
 </body>
 
